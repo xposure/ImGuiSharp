@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a409ced1-4d85-4c46-8c10-297d6ad27ed6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ImGui</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ImContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImDrawCmd.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImDrawIdx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImDrawList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImDrawVert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImRect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImTextureID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImUIState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImVec2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImVec4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImVector.cs" />
+  </ItemGroup>
+</Project>
