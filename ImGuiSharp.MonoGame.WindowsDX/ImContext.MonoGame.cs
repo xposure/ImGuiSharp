@@ -30,10 +30,10 @@ namespace ImGui
                             var pos = (short)_verts.Count;
                             var cmd = _drawRectCmds[idx];
                             var color = GetColor(cmd.color);
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.x, cmd.y, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.x + cmd.w, cmd.y, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.x + cmd.w, cmd.y + cmd.h, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.x, cmd.y + cmd.h, 0), color, Vector2.Zero));
+                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
+                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
+                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
+                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
 
                             var posOrg = pos;
                             _indices.Add(pos);
@@ -52,6 +52,9 @@ namespace ImGui
 
         private Color GetColor(uint color)
         {
+            int a = (int)(color & 0xff);
+            color >>= 8;
+
             int r = (int)(color & 0xff);
             color >>= 8;
 
@@ -59,9 +62,7 @@ namespace ImGui
             color >>= 8;
 
             int b = (int)(color & 0xff);
-            color >>= 8;
 
-            int a = (int)(color & 0xff);
 
             return new Color(r, g, b, a);
         }

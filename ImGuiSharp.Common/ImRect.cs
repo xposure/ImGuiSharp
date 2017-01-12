@@ -6,8 +6,13 @@ namespace ImGui
     // 2D axis aligned bounding-box
     // NB: we can't rely on ImVec2 math operators being available here
     [DebuggerDisplay("Min: {Min}, Max: {Max}")]
-    internal struct ImRect
+    public struct ImRect
     {
+        public static ImRect FromDeminensions(float x, float y, float w, float h)
+        {
+            return new ImRect(x, y, x + w, y + h);
+        }
+
         public ImVec2 Min;    // Upper-left
         public ImVec2 Max;    // Lower-right
 

@@ -5,8 +5,8 @@ namespace ImGui
 {
     public struct ImDrawRectCmd
     {
-        public int x, y, w, h;
-        public uint color;
+        public ImRect rect;
+        public ImColor color;
     }
 
     public partial class ImCmdBuffer
@@ -31,11 +31,12 @@ namespace ImGui
             _drawRectCmds.Clear();
         }
 
-        public void drawrect(int x, int y, int w, int h, uint color)
+        public void DrawRect(ImRect rect, ImColor color)
         {
             var idx = _drawRectCmds.Count;
             _cmds.Add(idx << 8);
-            _drawRectCmds.Add(new ImDrawRectCmd() { x = x, y = y, w = w, h = h, color = color });
+
+            _drawRectCmds.Add(new ImDrawRectCmd() { rect = rect, color = color });
         }
     }
 
@@ -47,7 +48,7 @@ namespace ImGui
 
         private ImCmdBuffer _cmdBuffer = new ImCmdBuffer();
         private ImUIState _uiState;
-        private uint bgcolor = 0xff555555;
+        private uint bgcolor = 0x555555ff;
         private string name = "Hello World!";
         //public bool button(int id, int x, int y)
         //{
@@ -67,7 +68,7 @@ namespace ImGui
         {
             _cmdBuffer.reset();
 
-            _cmdBuffer.drawrect(0, 0, 640, 480, bgcolor);
+            _cmdBuffer.DrawRect(new ImRect(0, 0, 640, 480), new ImColor(bgcolor));
 
             button(1, 50, 50);
 
@@ -83,22 +84,22 @@ namespace ImGui
                 //exit(0);
             }
 
-            int slidervalue = (int)(bgcolor & 0xff);
+            int slidervalue = (int)(bgcolor >> 8 & 0xff);
             if (slider(5, 500, 40, 255, ref slidervalue) == 1)
             {
-                bgcolor = (bgcolor & 0xffffff00) | (uint)slidervalue;
+                bgcolor = (bgcolor & 0xffff00ff) | (uint)slidervalue << 8;
             }
 
-            slidervalue = (int)((bgcolor >> 10) & 0x3f);
+            slidervalue = (int)((bgcolor >> 18) & 0x3f);
             if (slider(6, 550, 40, 63, ref slidervalue) == 1)
             {
-                bgcolor = (bgcolor & 0xffff00ff) | (uint)(slidervalue << 10);
+                bgcolor = (bgcolor & 0xff00ffff) | (uint)(slidervalue << 18);
             }
 
-            slidervalue = (int)((bgcolor >> 20) & 0xf);
+            slidervalue = (int)((bgcolor >> 28) & 0xf);
             if (slider(7, 600, 40, 15, ref slidervalue) == 1)
             {
-                bgcolor = (bgcolor & 0xff00ffff) | (uint)(slidervalue << 20);
+                bgcolor = (bgcolor & 0x00ffffff) | (uint)(slidervalue << 28);
             }
 
             textfield(8, 50, 250, ref name);
@@ -125,7 +126,7 @@ namespace ImGui
 
             // If we have keyboard focus, show it
             if (_uiState.kbditem == id)
-                _cmdBuffer.drawrect(x - 4, y - 4, 40, 280, 0xffff0000);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x - 4, y - 4, 40, 280), new ImColor(0xff0000ff));
 
             // Calculate mouse cursor's relative y offset
             int ypos = ((256 - 16) * value) / max;
@@ -139,15 +140,15 @@ namespace ImGui
             }
 
             // Render the scrollbar
-            _cmdBuffer.drawrect(x, y, 32, 256 + 16, 0xff777777);
+            _cmdBuffer.DrawRect(ImRect.FromDeminensions(x, y, 32, 256 + 16), new ImColor(0x777777FF));
 
             if (_uiState.activeitem == id || _uiState.hotitem == id)
             {
-                _cmdBuffer.drawrect(x + 8, y + 8 + ypos, 16, 16, 0xffffffff);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 8, y + 8 + ypos, 16, 16), new ImColor(0xffffffff));
             }
             else
             {
-                _cmdBuffer.drawrect(x + 8, y + 8 + ypos, 16, 16, 0xffaaaaaa);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 8, y + 8 + ypos, 16, 16), new ImColor(0xaaaaaaff));
             }
 
 
@@ -214,7 +215,7 @@ namespace ImGui
 
             // If we have keyboard focus, show it
             if (_uiState.kbditem == id)
-                _cmdBuffer.drawrect(x - 6, y - 6, 84, 68, 0xffff0000);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x - 6, y - 6, 84, 68), new ImColor(0xff0000ff));
 
             if (regionhit(x, y, 64, 48))
             {
@@ -229,24 +230,24 @@ namespace ImGui
                 _uiState.hotitem = id;
             }
 
-            _cmdBuffer.drawrect(x + 8, y + 8, 64, 48, 0xff000000);
+            _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 8, y + 8, 64, 48), new ImColor(0x000000ff));
             if (_uiState.hotitem == id)
             {
                 if (_uiState.activeitem == id)
                 {
                     // Button is both 'hot' and 'active'
-                    _cmdBuffer.drawrect(x + 2, y + 2, 64, 48, 0xffffffff);
+                    _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 2, y + 2, 64, 48), new ImColor(0xffffffff));
                 }
                 else
                 {
                     // Button is merely 'hot'
-                    _cmdBuffer.drawrect(x, y, 64, 48, 0xffffffff);
+                    _cmdBuffer.DrawRect(ImRect.FromDeminensions(x, y, 64, 48), new ImColor(0xffffffff));
                 }
             }
             else
             {
                 // button is not hot, but it may be active   
-                _cmdBuffer.drawrect(x, y, 64, 48, 0xffaaaaaa);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x, y, 64, 48), new ImColor(0xaaaaaaff));
             }
 
             // If we have keyboard focus, we'll need to process the keys
@@ -312,16 +313,16 @@ namespace ImGui
 
             // If we have keyboard focus, show it
             if (_uiState.kbditem == id)
-                _cmdBuffer.drawrect(x - 6, y - 6, 30 * 14 + 12, 24 + 12, 0xffff0000);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x - 6, y - 6, 30 * 14 + 12, 24 + 12), new ImColor(0xff0000ff));
 
             // Render the text field
             if (_uiState.activeitem == id || _uiState.hotitem == id)
             {
-                _cmdBuffer.drawrect(x - 4, y - 4, 30 * 14 + 8, 24 + 8, 0xffaaaaaa);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x - 4, y - 4, 30 * 14 + 8, 24 + 8), new ImColor(0xaaaaaaff));
             }
             else
             {
-                _cmdBuffer.drawrect(x - 4, y - 4, 30 * 14 + 8, 24 + 8, 0xff777777);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x - 4, y - 4, 30 * 14 + 8, 24 + 8), new ImColor(0x777777ff));
             }
 
             drawstring(buffer, x, y);
@@ -383,11 +384,11 @@ namespace ImGui
             if (ch == ' ') return;
 
             if (ch == '_')
-                _cmdBuffer.drawrect(x + 1, y + 12, 12, 2, 0xffffffff);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 1, y + 12, 12, 2), new ImColor(0xffffffff));
             else if (char.IsUpper(ch))
-                _cmdBuffer.drawrect(x + 1, y, 12, 12, 0xffffffff);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 1, y, 12, 12), new ImColor(0xffffffff));
             else
-                _cmdBuffer.drawrect(x + 1, y + 5, 12, 7, 0xffffffff);
+                _cmdBuffer.DrawRect(ImRect.FromDeminensions(x + 1, y + 5, 12, 7), new ImColor(0xffffffff));
         }
 
         public void drawstring(string text, int x, int y)

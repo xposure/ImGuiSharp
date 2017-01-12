@@ -9,6 +9,7 @@
     <Import_RootNamespace>ImGui</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)ImColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImDrawCmd.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImDrawIdx.cs" />

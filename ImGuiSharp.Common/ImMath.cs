@@ -25,6 +25,12 @@ namespace ImGui
             return fail_value;
         }
 
+        public static float fmodf(float x, float y)
+        {
+            return x % y;
+        }
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static System.Double Acos(System.Double arg0) { return System.Math.Acos(arg0); }
