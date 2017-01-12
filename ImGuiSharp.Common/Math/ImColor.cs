@@ -15,6 +15,25 @@
 
         public void SetHSV(float h, float s, float v, float a = 1.0f) { ColorConvertHSVtoRGB(h, s, v, out Value.x, out Value.y, out Value.z); Value.w = a; }
 
+        public uint ToRGBA()
+        {
+            var a = (byte)(Value.x * 255);
+            var r = (byte)(Value.y * 255);
+            var g = (byte)(Value.z * 255);
+            var b = (byte)(Value.w * 255);
+
+            return (uint)((r << 24) + (g << 16) + (b << 8) + a);
+        }
+
+        public uint ToARGB()
+        {
+            var a = (byte)(Value.x * 255);
+            var r = (byte)(Value.y * 255);
+            var g = (byte)(Value.z * 255);
+            var b = (byte)(Value.w * 255);
+
+            return (uint)((a << 24) + (r << 16) + (g << 8) + b);
+        }
 
         private static float[] u32FloatLookup;
         public static ImVec4 ColorConvertU32ToFloat4(uint @in)
@@ -83,9 +102,9 @@
         }
 
         //#define IM_COL32(R,G,B,A)    (((uint)(A)<<24) | ((uint)(B)<<16) | ((uint)(G)<<8) | ((uint)(R)))
-        public static ImColor White { get { return new ImColor(0xFFFFFFFF); } }
-        public static ImColor Black { get { return new ImColor(0xFF000000); } }
-        public static ImColor Transparent { get { return new ImColor(0x00000000); } }
+        public static ImColor White { get { return new ImColor(1f, 1f, 1f, 1f); } }
+        public static ImColor Black { get { return new ImColor(0f, 0f, 0f, 1f); } }
+        public static ImColor Transparent { get { return new ImColor(0f, 0f, 0f, 0f); } }
 
     }
 }

@@ -16,52 +16,68 @@ namespace ImGui
             _indices.Clear();
             _verts.Clear();
 
-            for (var i = 0; i < _cmds.Count; i++)
+            var vertData = _drawList.VtxBuffer.Data;
+            var idxData = _drawList.IdxBuffer.Data;
+
+            for (var i = 0; i < vertData.Length && i < _drawList.VtxBuffer.Size; i++)
             {
-                var idx = _cmds[i];
-
-                var type = (idx & 0xff);
-                idx >>= 8;
-
-                switch (type)
-                {
-                    case 0:
-                        {
-                            var pos = (short)_verts.Count;
-                            var cmd = _drawRectCmds[idx];
-                            var color = GetColor(cmd.color);
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
-                            _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
-
-                            var posOrg = pos;
-                            _indices.Add(pos);
-                            _indices.Add(++pos);
-                            _indices.Add(++pos);
-                            _indices.Add(pos);
-                            _indices.Add(++pos);
-                            _indices.Add(posOrg);
-                        }
-                        break;
-                }
+                var v = vertData[i];
+                _verts.Add(new VertexPositionColorTexture(new Vector3(v.pos.x, v.pos.y, 0), GetColor(v.col), new Vector2(v.uv.x, v.uv.y)));
             }
 
+            for(var i = 0; i < idxData.Length && i < _drawList.IdxBuffer.Size; i++)
+            {
+                _indices.Add((short)(ushort)idxData[i]);
+            }
             gd.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _verts.ToArray(), 0, _verts.Count, _indices.ToArray(), 0, _indices.Count / 3);
+
+            //for (var i = 0; i < _cmds.Count; i++)
+            //{
+            //    var idx = _cmds[i];
+
+            //    var type = (idx & 0xff);
+            //    idx >>= 8;
+
+            //    switch (type)
+            //    {
+            //        case 0:
+            //            {
+            //                var pos = (short)_verts.Count;
+            //                var cmd = _drawRectCmds[idx];
+            //                var color = GetColor(cmd.color);
+            //                _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
+            //                _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Min.y, 0), color, Vector2.Zero));
+            //                _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Max.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
+            //                _verts.Add(new VertexPositionColorTexture(new Vector3(cmd.rect.Min.x, cmd.rect.Max.y, 0), color, Vector2.Zero));
+
+            //                var posOrg = pos;
+            //                _indices.Add(pos);
+            //                _indices.Add(++pos);
+            //                _indices.Add(++pos);
+            //                _indices.Add(pos);
+            //                _indices.Add(++pos);
+            //                _indices.Add(posOrg);
+            //            }
+            //            break;
+            //    }
+            //}
+
+            //gd.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, _verts.ToArray(), 0, _verts.Count, _indices.ToArray(), 0, _indices.Count / 3);
         }
 
         private Color GetColor(uint color)
         {
-            int a = (int)(color & 0xff);
-            color >>= 8;
 
-            int r = (int)(color & 0xff);
+            int b = (int)(color & 0xff);
             color >>= 8;
 
             int g = (int)(color & 0xff);
             color >>= 8;
 
-            int b = (int)(color & 0xff);
+            int r = (int)(color & 0xff);
+            color >>= 8;
+
+            int a = (int)(color & 0xff);
 
 
             return new Color(r, g, b, a);

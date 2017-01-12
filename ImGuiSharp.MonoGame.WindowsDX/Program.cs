@@ -28,7 +28,7 @@ namespace ImGui
         SpriteFont spriteFont;
 
         ImContext _imgui;
-
+        Texture2D _whiteTexture;
 
         public Game1()
         {
@@ -62,6 +62,8 @@ namespace ImGui
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             _imgui = new ImContext(GraphicsDevice);
+            _whiteTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _whiteTexture.SetData(new Color[1] { Color.White });
             //spriteFont = Content.Load<SpriteFont>("Fonts/Arial");
         }
 
@@ -97,7 +99,7 @@ namespace ImGui
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            _imgui.render();
+            _imgui.render(_whiteTexture);
 
             base.Draw(gameTime);
         }

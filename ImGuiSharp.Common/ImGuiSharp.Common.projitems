@@ -9,18 +9,18 @@
     <Import_RootNamespace>ImGui</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)ImColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawCmd.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawIdx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawVert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImDrawCmd.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImDrawIdx.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImDrawList.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImDrawVert.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImMath.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImRect.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImTextureID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImUIState.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImVec2.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ImVec4.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImVector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\ImColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\ImMath.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\ImRect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\ImVec2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Math\ImVec4.cs" />
   </ItemGroup>
 </Project>

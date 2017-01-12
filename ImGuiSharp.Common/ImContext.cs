@@ -13,6 +13,8 @@ namespace ImGui
     {
         private static ImVec2[] _circleVerts = new ImVec2[12];
 
+        private ImDrawList _drawList = new ImDrawList();
+
         static ImCmdBuffer()
         {
             for (var i = 0; i < _circleVerts.Length; i++)
@@ -25,18 +27,26 @@ namespace ImGui
         private List<int> _cmds = new List<int>();
         private List<ImDrawRectCmd> _drawRectCmds = new List<ImDrawRectCmd>();
 
-        public void reset()
+        public void reset(object tex)
         {
             _cmds.Clear();
             _drawRectCmds.Clear();
+            _drawList.Clear();
+            _drawList.PushTextureID(new ImTextureID(tex));
         }
 
         public void DrawRect(ImRect rect, ImColor color)
         {
+            _drawList.AddRectFilled(rect.Min, rect.Max, color.ToARGB());
             var idx = _drawRectCmds.Count;
             _cmds.Add(idx << 8);
 
             _drawRectCmds.Add(new ImDrawRectCmd() { rect = rect, color = color });
+        }
+
+        public void done()
+        {
+            _drawList.PopTextureID();
         }
     }
 
@@ -64,10 +74,11 @@ namespace ImGui
 
         partial void platformupdate();
 
-        public void render()
+        public void render(object tex)
         {
-            _cmdBuffer.reset();
+            _cmdBuffer.reset(tex);
 
+            
             _cmdBuffer.DrawRect(new ImRect(0, 0, 640, 480), new ImColor(bgcolor));
 
             button(1, 50, 50);
@@ -115,6 +126,8 @@ namespace ImGui
                 if (_uiState.activeitem == 0)
                     _uiState.activeitem = -1;
             }
+
+            _cmdBuffer.done();
         }
 
         // Simple scroll bar IMGUI widget
