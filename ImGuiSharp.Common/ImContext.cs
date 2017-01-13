@@ -13,7 +13,7 @@ namespace ImGui
     {
         private static ImVec2[] _circleVerts = new ImVec2[12];
 
-        private ImDrawList _drawList = new ImDrawList();
+        public ImDrawList _drawList = new ImDrawList();
 
         static ImCmdBuffer()
         {
@@ -78,42 +78,67 @@ namespace ImGui
         {
             _cmdBuffer.reset(tex);
 
-            
-            _cmdBuffer.DrawRect(new ImRect(0, 0, 640, 480), new ImColor(bgcolor));
+ 
 
-            button(1, 50, 50);
+            //_cmdBuffer.DrawRect(new ImRect(0, 0, 640, 480), new ImColor(bgcolor));
 
-            button(2, 150, 50);
+            //button(1, 50, 50);
 
-            if (button(3, 50, 150))
-            {
-                //bgcolor = (SDL_GetTicks() * 0xc0cac01a) | 0x77;
-            }
+            //button(2, 150, 50);
 
-            if (button(4, 150, 150))
-            {
-                //exit(0);
-            }
+            //if (button(3, 50, 150))
+            //{
+            //    //bgcolor = (SDL_GetTicks() * 0xc0cac01a) | 0x77;
+            //}
 
-            int slidervalue = (int)(bgcolor >> 8 & 0xff);
-            if (slider(5, 500, 40, 255, ref slidervalue) == 1)
-            {
-                bgcolor = (bgcolor & 0xffff00ff) | (uint)slidervalue << 8;
-            }
+            //if (button(4, 150, 150))
+            //{
+            //    //exit(0);
+            //}
 
-            slidervalue = (int)((bgcolor >> 18) & 0x3f);
-            if (slider(6, 550, 40, 63, ref slidervalue) == 1)
-            {
-                bgcolor = (bgcolor & 0xff00ffff) | (uint)(slidervalue << 18);
-            }
+            //int slidervalue = (int)(bgcolor >> 8 & 0xff);
+            //if (slider(5, 500, 40, 255, ref slidervalue) == 1)
+            //{
+            //    bgcolor = (bgcolor & 0xffff00ff) | (uint)slidervalue << 8;
+            //}
 
-            slidervalue = (int)((bgcolor >> 28) & 0xf);
-            if (slider(7, 600, 40, 15, ref slidervalue) == 1)
-            {
-                bgcolor = (bgcolor & 0x00ffffff) | (uint)(slidervalue << 28);
-            }
+            //slidervalue = (int)((bgcolor >> 18) & 0x3f);
+            //if (slider(6, 550, 40, 63, ref slidervalue) == 1)
+            //{
+            //    bgcolor = (bgcolor & 0xff00ffff) | (uint)(slidervalue << 18);
+            //}
 
-            textfield(8, 50, 250, ref name);
+            //slidervalue = (int)((bgcolor >> 28) & 0xf);
+            //if (slider(7, 600, 40, 15, ref slidervalue) == 1)
+            //{
+            //    bgcolor = (bgcolor & 0x00ffffff) | (uint)(slidervalue << 28);
+            //}
+
+            //textfield(8, 50, 250, ref name);
+
+            //_cmdBuffer._drawList.AddPolyline(
+            //     new ImVector<ImVec2>(
+            //         new ImVec2(50, 100),
+            //         new ImVec2(100, 100),
+            //         new ImVec2(100, 200),
+            //         new ImVec2(50, 200)
+            //     ), 10, 0xffffaa55, true, 25, false);
+
+            //_cmdBuffer._drawList.AddPolyline(
+            //     new ImVector<ImVec2>(
+            //         new ImVec2(50, 100),
+            //         new ImVec2(100, 100),
+            //         new ImVec2(100, 200),
+            //         new ImVec2(50, 200)
+            //     ), 10, 0x00ffffff, true, 25, true);
+
+            _cmdBuffer._drawList.AddPolyline(
+             new ImVector<ImVec2>(
+                 new ImVec2(25, 25),
+                 new ImVec2(25, 50),
+                 new ImVec2(50, 50),
+                 new ImVec2(50, 25)
+             ), 10, 0x00ffffff, true, 10, false);
             //_cmdBuffer.drawrect(_uiState.mousex - 32, _uiState.mousey - 24, 100, 100, 0xffffff00 + (uint)(_uiState.mousedown ? 0xff : 0));
             platformrender();
 

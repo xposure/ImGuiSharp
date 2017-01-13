@@ -91,6 +91,8 @@ namespace ImGui
         private Texture2D _whiteTexture;
         private KeyboardState _kbLastState, _kbState;
         private MouseState _msLastState, _msState;
+        private RenderTarget2D _renderTarget;
+        private RasterizerState _rasterizerState;
 
         public ImContext(GraphicsDevice graphicsDevice)
         {
@@ -98,6 +100,9 @@ namespace ImGui
             _spriteBatch = new SpriteBatch(_graphicsDevice);
             _whiteTexture = new Texture2D(_graphicsDevice, 1, 1);
             _whiteTexture.SetData(new Color[1] { Color.White });
+            _renderTarget = new RenderTarget2D(graphicsDevice, 640 / 8, 480 / 8);
+            _rasterizerState = new RasterizerState();
+            _rasterizerState.FillMode = FillMode.WireFrame;
 
             _kbState = Keyboard.GetState();
             _msState = Mouse.GetState();
@@ -167,12 +172,24 @@ namespace ImGui
 
         partial void platformrender()
         {
-            _spriteBatch.Begin(sortMode: SpriteSortMode.Immediate);
+            _graphicsDevice.SetRenderTarget(_renderTarget);
+
+            _spriteBatch.Begin(
+                sortMode: SpriteSortMode.Immediate, 
+                rasterizerState: _rasterizerState, 
+                blendState: BlendState.AlphaBlend);
+
             _graphicsDevice.Textures[0] = _whiteTexture;
             _cmdBuffer.render(_graphicsDevice);
             _spriteBatch.End();
+            _graphicsDevice.Textures[0] = null;
 
-            //_graphicsDevice.Textures[0] = null;
+            _graphicsDevice.SetRenderTarget(null);
+
+
+            _spriteBatch.Begin(rasterizerState: RasterizerState.CullCounterClockwise);
+            _spriteBatch.Draw(_renderTarget, new Rectangle(0, 0, 640, 480), Color.White);
+            _spriteBatch.End();
 
             // If no widget grabbed tab, clear focus
             if (_uiState.keytabpressed)

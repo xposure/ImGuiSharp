@@ -18,6 +18,16 @@ namespace ImGui
         [STAThread]
         static void Main()
         {
+            var p = ImVec2.Zero;
+            var r = ImMath.LineIntersectionPoint(
+                new ImVec2(0, 9),
+                new ImVec2(0, 1),
+                new ImVec2(1, 0),
+                new ImVec2(9, 0),
+                out p
+                );
+
+
             using (var game = new Game1())
                 game.Run();
         }

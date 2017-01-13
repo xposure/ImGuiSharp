@@ -430,7 +430,7 @@
             if (anti_aliased)
             {
                 // Anti-aliased stroke
-                float AA_SIZE = 1.0f;
+                float AA_SIZE = 10.0f;
                 uint col_trans = col & 0x00ffffff;
 
                 int idx_count = thick_line ? count * 18 : count * 12;
@@ -499,8 +499,11 @@
                     for (int i = 0; i < points_count; i++)
                     {
                         VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = points[i], uv = uv, col = col };
-                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 0], uv = uv, col = col_trans };
-                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 1], uv = uv, col = col_trans };
+                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 0], uv = uv, col = 0xff };
+                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 1], uv = uv, col = 0xff};
+
+                        //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 0], uv = uv, col = col_trans };
+                        //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 2 + 1], uv = uv, col = col_trans };
                     }
                 }
                 else
@@ -556,10 +559,10 @@
                     // Add vertexes
                     for (int i = 0; i < points_count; i++)
                     {
-                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 0], uv = uv, col = col_trans };
+                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 0], uv = uv, col = 0xff };
                         VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 1], uv = uv, col = col };
                         VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 2], uv = uv, col = col };
-                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 3], uv = uv, col = col_trans };
+                        VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = temp_points[i * 4 + 3], uv = uv, col = 0xff };
                         //_VtxWritePtr += 4;
                     }
                 }
@@ -572,34 +575,40 @@
                 int vtx_count = count * 4;      // FIXME-OPT: Not sharing edges
                 PrimReserve(idx_count, vtx_count);
 
-                for (int i1 = 0; i1 < count; i1++)
+                for (int i0 = 0; i0 < count; i0++)
                 {
+                    int i1 = (i0 + 1) == points_count ? 0 : i0 + 1;
                     int i2 = (i1 + 1) == points_count ? 0 : i1 + 1;
+                    int i3 = (i2 + 1) == points_count ? 0 : i2 + 1;
+
+                    ImVec2 p0 = points[i0];
                     ImVec2 p1 = points[i1];
                     ImVec2 p2 = points[i2];
+                    ImVec2 p3 = points[i3];
+
                     ImVec2 diff = p2 - p1;
                     diff *= ImMath.InvLength(diff, 1.0f);
 
                     float dx = diff.x * (thickness * 0.5f);
                     float dy = diff.y * (thickness * 0.5f);
 
-                    PrimQuadUV(
-                        new ImVec2(p1.x + dy, p1.y - dx),
-                        new ImVec2(p2.x + dy, p2.y - dx),
-                        new ImVec2(p2.x - dy, p2.y + dx),
-                        new ImVec2(p1.x - dy, p1.y + dx),
-                        uv, col);
+                    //PrimQuadUV(
+                    //    new ImVec2(p1.x + dy, p1.y - dx),
+                    //    new ImVec2(p2.x + dy, p2.y - dx),
+                    //    new ImVec2(p2.x - dy, p2.y + dx),
+                    //    new ImVec2(p1.x - dy, p1.y + dx),
+                    //    uv, col);
 
-                    //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p1.x + dy, p1.y - dx), uv = uv, col = col };
-                    //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p2.x + dy, p2.y - dx), uv = uv, col = col };
-                    //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p2.x - dy, p2.y + dx), uv = uv, col = col };
-                    //VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p1.x - dy, p1.y + dx), uv = uv, col = col };
-                    ////_VtxWritePtr += 4;
+                    VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p1.x + dy, p1.y - dx), uv = uv, col = col };
+                    VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p2.x + dy, p2.y - dx), uv = uv, col = col };
+                    VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p2.x - dy, p2.y + dx), uv = uv, col = col };
+                    VtxBuffer[_VtxWritePtr++] = new ImDrawVert() { pos = new ImVec2(p1.x - dy, p1.y + dx), uv = uv, col = col };
+                    //_VtxWritePtr += 4;
 
-                    //IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 1); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 2);
-                    //IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 2); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 3);
-                    ////_IdxWritePtr += 6;
-                    //_VtxCurrentIdx += 4;
+                    IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 1); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 2);
+                    IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 2); IdxBuffer[_IdxWritePtr++] = (ImDrawIdx)(_VtxCurrentIdx + 3);
+                    //_IdxWritePtr += 6;
+                    _VtxCurrentIdx += 4;
                 }
             }
         }

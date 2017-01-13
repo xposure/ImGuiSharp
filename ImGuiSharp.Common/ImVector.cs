@@ -19,6 +19,12 @@
         //typedef const value_type*   const_iterator;
 
         public ImVector() { Size = Capacity = 0; }
+        public ImVector(params T[] args) : base()
+        {
+            reserve(args.Length);
+            foreach (var a in args)
+                push_back(a);
+        }
         //~ImVector()                 { if (Data) ImGui::MemFree(Data); }
 
         public bool empty() { return Size == 0; }
