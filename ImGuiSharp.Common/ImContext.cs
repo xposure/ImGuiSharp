@@ -56,18 +56,240 @@ namespace ImGui
         public const bool AntiAliasedLines = true;
         public const float CurveTessellationTol = 1.25f;
 
+
         private ImCmdBuffer _cmdBuffer = new ImCmdBuffer();
         private ImUIState _uiState;
         private uint bgcolor = 0x555555ff;
         private string name = "Hello World!";
+
+        private ImEvent _currentEvent = new ImEvent();
+        private ImGuiState _state = new ImGuiState();
+        private ImGuiIO io = new ImGuiIO();
+
         //public bool button(int id, int x, int y)
         //{
 
         //}
 
-        public void update()
+        public void update(float dt, bool active)
         {
+            io.DeltaTime = dt;
+            io.IsActive = active;
+
+            for (var i = 0; i < io.KeysDown.Length; i++)
+                io.KeysDown[i] = false;
+
             platformupdate();
+
+            //ImGuiState & g = *GImGui;
+            var g = io;
+
+            // Check user data
+            System.Diagnostics.Debug.Assert(io.DeltaTime >= 0.0f);               // Need a positive DeltaTime (zero is tolerated but will cause some timing issues)
+            System.Diagnostics.Debug.Assert(io.DisplaySize.x >= 0.0f && io.DisplaySize.y >= 0.0f);
+            //System.Diagnostics.Debug.Assert(io.Fonts.Fonts.Size > 0);           // Font Atlas not created. Did you call io.Fonts.GetTexDataAsRGBA32 / GetTexDataAsAlpha8 ?
+            //System.Diagnostics.Debug.Assert(io.Fonts.Fonts[0].IsLoaded());     // Font Atlas not created. Did you call io.Fonts.GetTexDataAsRGBA32 / GetTexDataAsAlpha8 ?
+            //System.Diagnostics.Debug.Assert(g.Style.CurveTessellationTol > 0.0f);  // Invalid style setting
+
+            //if (!g.Initialized)
+            //{
+            //    // Initialize on first frame
+            //    //g.LogClipboard = (ImGuiTextBuffer*)ImGui::MemAlloc(sizeof(ImGuiTextBuffer));
+            //    //TODO: g.LogClipboard = new ImGuiTextBuffer();
+            //    //IM_PLACEMENT_NEW(g.LogClipboard) ImGuiTextBuffer();
+
+            //    //TODO: System.Diagnostics.Debug.Assert(g.Settings.empty());
+            //    //TODO: LoadSettings();
+            //    g.Initialized = true;
+            //}
+
+            //SetCurrentFont(io.Fonts.Fonts[0]);
+
+            _state.Time += io.DeltaTime;
+            _state.FrameCount += 1;
+            //g.Tooltip = null;
+            //g.OverlayDrawList.Clear();
+            //g.OverlayDrawList.PushTextureID(io.Fonts.TexID);
+            //g.OverlayDrawList.PushClipRectFullScreen();
+            //g.OverlayDrawList.AddDrawCmd();
+
+            //// Mark rendering data as invalid to prevent user who may have a handle on it to use it
+            //g.RenderDrawData.Valid = false;
+            //g.RenderDrawData.CmdLists = null;
+            //g.RenderDrawData.CmdListsCount = g.RenderDrawData.TotalVtxCount = g.RenderDrawData.TotalIdxCount = 0;
+
+            // Update inputs state
+            if (io.MousePos.x < 0 && io.MousePos.y < 0)
+                io.MousePos = new ImVec2(-9999.0f, -9999.0f);
+            if ((io.MousePos.x < 0 && io.MousePos.y < 0) || (io.MousePosPrev.x < 0 && io.MousePosPrev.y < 0))   // if mouse just appeared or disappeared (negative coordinate) we cancel out movement in MouseDelta
+                io.MouseDelta = new ImVec2(0.0f, 0.0f);
+            else
+                io.MouseDelta = io.MousePos - io.MousePosPrev;
+            io.MousePosPrev = io.MousePos;
+            for (int i = 0; i < io.MouseDown.Length; i++)
+            {
+                io.MouseClicked[i] = io.MouseDown[i] && io.MouseDownDuration[i] < 0.0f;
+                io.MouseReleased[i] = !io.MouseDown[i] && io.MouseDownDuration[i] >= 0.0f;
+                io.MouseDownDurationPrev[i] = io.MouseDownDuration[i];
+                io.MouseDownDuration[i] = io.MouseDown[i] ? (io.MouseDownDuration[i] < 0.0f ? 0.0f : io.MouseDownDuration[i] + io.DeltaTime) : -1.0f;
+                io.MouseDoubleClicked[i] = false;
+                if (io.MouseClicked[i])
+                {
+                    if (_state.Time - io.MouseClickedTime[i] < io.MouseDoubleClickTime)
+                    {
+                        if (ImMath.LengthSqr(io.MousePos - io.MouseClickedPos[i]) < io.MouseDoubleClickMaxDist * io.MouseDoubleClickMaxDist)
+                            io.MouseDoubleClicked[i] = true;
+                        io.MouseClickedTime[i] = float.MinValue;// -FLT_MAX;    // so the third click isn't turned into a double-click
+                    }
+                    else
+                    {
+                        io.MouseClickedTime[i] = _state.Time;
+                    }
+                    io.MouseClickedPos[i] = io.MousePos;
+                    io.MouseDragMaxDistanceSqr[i] = 0.0f;
+                }
+                else if (io.MouseDown[i])
+                {
+                    io.MouseDragMaxDistanceSqr[i] = ImMath.Max(io.MouseDragMaxDistanceSqr[i], ImMath.LengthSqr(io.MousePos - io.MouseClickedPos[i]));
+                }
+            }
+
+            for (int i = 0; i < io.KeysDown.Length; i++)
+            {
+                io.KeysDownDurationPrev[i] = io.KeysDownDuration[i];
+                io.KeysDownDuration[i] = io.KeysDown[i] ? (io.KeysDownDuration[i] < 0.0f ? 0.0f : io.KeysDownDuration[i] + io.DeltaTime) : -1.0f;
+            }
+
+            // Calculate frame-rate for the user, as a purely luxurious feature
+            _state.FramerateSecPerFrameAccum += io.DeltaTime - _state.FramerateSecPerFrame[_state.FramerateSecPerFrameIdx];
+            _state.FramerateSecPerFrame[_state.FramerateSecPerFrameIdx] = io.DeltaTime;
+            _state.FramerateSecPerFrameIdx = (_state.FramerateSecPerFrameIdx + 1) % _state.FramerateSecPerFrame.Length;
+            io.Framerate = 1.0f / (_state.FramerateSecPerFrameAccum / (float)_state.FramerateSecPerFrame.Length);
+
+            //// Clear reference to active widget if the widget isn't alive anymore
+            //g.HoveredIdPreviousFrame = g.HoveredId;
+            //g.HoveredId = 0;
+            //g.HoveredIdAllowOverlap = false;
+            //if (!g.ActiveIdIsAlive && g.ActiveIdPreviousFrame == g.ActiveId && g.ActiveId != 0)
+            //    SetActiveID(0);
+            //g.ActiveIdPreviousFrame = g.ActiveId;
+            //g.ActiveIdIsAlive = false;
+            //g.ActiveIdIsJustActivated = false;
+            //if (g.ActiveId == 0)
+            //    g.MovedWindow = null;
+
+            //// Delay saving settings so we don't spam disk too much
+            //if (g.SettingsDirtyTimer > 0.0f)
+            //{
+            //    g.SettingsDirtyTimer -= io.DeltaTime;
+            //    //TODO: if (g.SettingsDirtyTimer <= 0.0f)
+            //    //TODO:    SaveSettings();
+            //}
+
+            //// Find the window we are hovering. Child windows can extend beyond the limit of their parent so we need to derive HoveredRootWindow from HoveredWindow
+            //g.HoveredWindow = FindHoveredWindow(io.MousePos, false);
+            //if (g.HoveredWindow != null && ((g.HoveredWindow.Flags & ImGuiWindowFlags.ImGuiWindowFlags_ChildWindow) == ImGuiWindowFlags.ImGuiWindowFlags_ChildWindow))
+            //    g.HoveredRootWindow = g.HoveredWindow.RootWindow;
+            //else
+            //    g.HoveredRootWindow = FindHoveredWindow(io.MousePos, true);
+
+            //ImGuiWindow modal_window = GetFrontMostModalRootWindow();
+            //if (modal_window != null)
+            //{
+            //    g.ModalWindowDarkeningRatio = ImGui.Min(g.ModalWindowDarkeningRatio + io.DeltaTime * 6.0f, 1.0f);
+            //    if (g.HoveredRootWindow != modal_window)
+            //        g.HoveredRootWindow = g.HoveredWindow = null;
+            //}
+            //else
+            //{
+            //    g.ModalWindowDarkeningRatio = 0.0f;
+            //}
+
+            //// Are we using inputs? Tell user so they can capture/discard the inputs away from the rest of their application.
+            //// When clicking outside of a window we assume the click is owned by the application and won't request capture. We need to track click ownership.
+            //int mouse_earliest_button_down = -1;
+            //bool mouse_any_down = false;
+            //for (int i = 0; i < io.MouseDown.Length; i++)
+            //{
+            //    if (io.MouseClicked[i])
+            //        io.MouseDownOwned[i] = (g.HoveredWindow != null) || (!g.OpenedPopupStack.empty());
+            //    mouse_any_down |= io.MouseDown[i];
+            //    if (io.MouseDown[i])
+            //        if (mouse_earliest_button_down == -1 || io.MouseClickedTime[mouse_earliest_button_down] > io.MouseClickedTime[i])
+            //            mouse_earliest_button_down = i;
+            //}
+            //bool mouse_avail_to_imgui = (mouse_earliest_button_down == -1) || io.MouseDownOwned[mouse_earliest_button_down];
+            //if (g.CaptureMouseNextFrame != -1)
+            //    io.WantCaptureMouse = (g.CaptureMouseNextFrame != 0);
+            //else
+            //    io.WantCaptureMouse = (mouse_avail_to_imgui && (g.HoveredWindow != null || mouse_any_down)) || (g.ActiveId != 0) || (!g.OpenedPopupStack.empty());
+            //io.WantCaptureKeyboard = (g.CaptureKeyboardNextFrame != -1) ? (g.CaptureKeyboardNextFrame != 0) : (g.ActiveId != 0);
+            //io.WantTextInput = (g.ActiveId != 0 && g.InputTextState.Id == g.ActiveId);
+            //g.MouseCursor = ImGuiMouseCursor.ImGuiMouseCursor_Arrow;
+            //g.CaptureMouseNextFrame = g.CaptureKeyboardNextFrame = -1;
+            //g.OsImePosRequest = new ImVec2(1.0f, 1.0f); // OS Input Method Editor showing on top-left of our window by default
+
+            //// If mouse was first clicked outside of ImGui bounds we also cancel out hovering.
+            //if (!mouse_avail_to_imgui)
+            //    g.HoveredWindow = g.HoveredRootWindow = null;
+
+            //// Scale & Scrolling
+            //if (g.HoveredWindow != null && io.MouseWheel != 0.0f && !g.HoveredWindow.Collapsed)
+            //{
+            //    ImGuiWindow window = g.HoveredWindow;
+            //    if (io.KeyCtrl)
+            //    {
+            //        if (io.FontAllowUserScaling)
+            //        {
+            //            // Zoom / Scale window
+            //            float new_font_scale = ImGui.Clamp(window.FontWindowScale + io.MouseWheel * 0.10f, 0.50f, 2.50f);
+            //            float scale = new_font_scale / window.FontWindowScale;
+            //            window.FontWindowScale = new_font_scale;
+
+            //            ImVec2 offset = window.Size * (1.0f - scale) * (io.MousePos - window.Pos) / window.Size;
+            //            window.Pos += offset;
+            //            window.PosFloat += offset;
+            //            window.Size *= scale;
+            //            window.SizeFull *= scale;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        // Scroll
+            //        if (!((window.Flags & ImGuiWindowFlags.ImGuiWindowFlags_NoScrollWithMouse) == ImGuiWindowFlags.ImGuiWindowFlags_NoScrollWithMouse))
+            //        {
+            //            int scroll_lines = ((window.Flags & ImGuiWindowFlags.ImGuiWindowFlags_ComboBox) == ImGuiWindowFlags.ImGuiWindowFlags_ComboBox) ? 3 : 5;
+            //            SetWindowScrollY(window, window.Scroll.y - io.MouseWheel * window.CalcFontSize() * scroll_lines);
+            //        }
+            //    }
+            //}
+
+            //// Pressing TAB activate widget focus
+            //// NB: Don't discard FocusedWindow if it isn't active, so that a window that go on/off programatically won't lose its keyboard focus.
+            //if (g.ActiveId == 0 && g.FocusedWindow != null && g.FocusedWindow.Active && IsKeyPressedMap(ImGuiKey.ImGuiKey_Tab, false))
+            //    g.FocusedWindow.FocusIdxTabRequestNext = 0;
+
+            //// Mark all windows as not visible
+            //for (int i = 0; i != g.Windows.Size; i++)
+            //{
+            //    ImGuiWindow window = g.Windows[i];
+            //    window.WasActive = window.Active;
+            //    window.Active = false;
+            //    window.Accessed = false;
+            //}
+
+            //// No window should be open at the beginning of the frame.
+            //// But in order to allow the user to call NewFrame() multiple times without calling Render(), we are doing an explicit clear.
+            //g.CurrentWindowStack.resize(0);
+            //g.CurrentPopupStack.resize(0);
+            //CloseInactivePopups();
+
+            //// Create implicit window - we will only render it if the user has added something to it.
+            //SetNextWindowSize(new ImVec2(400, 400), ImGuiSetCond.ImGuiSetCond_FirstUseEver);
+            //Begin("Debug");
+
+
+
             _uiState.hotitem = -1;
             blink++;
         }
@@ -78,7 +300,11 @@ namespace ImGui
         {
             _cmdBuffer.reset(tex);
 
- 
+
+            if(io.IsKeyPressed('a', true))
+            {
+                System.Diagnostics.Debug.WriteLine("ping" + blink);
+            }
 
             //_cmdBuffer.DrawRect(new ImRect(0, 0, 640, 480), new ImColor(bgcolor));
 
@@ -245,6 +471,7 @@ namespace ImGui
 
             return 0;
         }
+
         public bool button(int id, int x, int y)
         {
             // If no widget has keyboard focus, take it

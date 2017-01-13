@@ -50,6 +50,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <Compile Include="ImContext.MonoGame.cs" />
+    <Compile Include="ImGuiIO.MonoGame.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\ImGuiSharp.Common\ImGuiSharp.Common.projitems" Label="Shared" />

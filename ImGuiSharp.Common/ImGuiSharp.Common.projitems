@@ -14,6 +14,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawList.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Draw\ImDrawVert.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGuiIO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGuiKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGuiState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImTextureID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImUIState.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ImVector.cs" />

@@ -58,6 +58,16 @@ namespace ImGui
             return true;
         }
 
+        public static float LengthSqr(ImVec2 lhs)
+        {
+            return lhs.x * lhs.x + lhs.y * lhs.y;
+        }
+
+        public static float LengthSqr(ImVec4 lhs)
+        {
+            return lhs.x * lhs.x + lhs.y * lhs.y + lhs.z * lhs.z + lhs.w * lhs.w;
+        }
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static System.Double Acos(System.Double arg0) { return System.Math.Acos(arg0); }

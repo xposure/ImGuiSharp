@@ -96,7 +96,7 @@ namespace ImGui
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            _imgui.update();
+            _imgui.update((float)gameTime.ElapsedGameTime.TotalSeconds, IsActive);
 
             base.Update(gameTime);
         }
