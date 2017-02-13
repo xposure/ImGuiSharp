@@ -1,5 +1,7 @@
 # ImGuiSharp AS-IS
 
+[LICENSE](https://github.com/ocornut/imgui/blob/master/LICENSE) Will retain ImGui's license for the time being.
+
 Near completion of most of the port for ImGui to .NET. I would say I'm around the 90% mark and I'm currently working on the demo side to finish off any pieces I missed along the way. Here are some random points of interest.
 - Currently targeting MonoGame but I will remove this requirement to keep it in line with ImGui
 - Ported stb_textedited, may be useful for others looking for text input logic for .NET
