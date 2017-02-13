@@ -1,5 +1,7 @@
 # ImGuiSharp AS-IS
 
+- Currently not maintained as the code has been used in another project and heavily modified. This code is put here AS-IS for other developers to use, alter or do whatever they see fit.
+
 [LICENSE](https://github.com/ocornut/imgui/blob/master/LICENSE) Will retain ImGui's license for the time being.
 
 Near completion of most of the port for ImGui to .NET. I would say I'm around the 90% mark and I'm currently working on the demo side to finish off any pieces I missed along the way. Here are some random points of interest.
