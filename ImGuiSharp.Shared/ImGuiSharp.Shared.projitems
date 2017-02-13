@@ -1,0 +1,227 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>3bb0f0ac-52a6-4953-8b2e-8c7def3e9745</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>ImGuiSharp.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\API.h" />
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\DefaultFontData.cpp" />
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\Helpers.cpp" />
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImColor.cs.h">
+      <DependentUpon>ImColor.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawCallback.cs.h">
+      <DependentUpon>ImDrawCallback.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawChannel.cs.h">
+      <DependentUpon>ImDrawChannel.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawCmd.cs.h">
+      <DependentUpon>ImDrawCmd.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawData.cs.cpp">
+      <DependentUpon>ImDrawData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawData.cs.h">
+      <DependentUpon>ImDrawData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawIdx.cs.h">
+      <DependentUpon>ImDrawIdx.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawList.cs.cpp">
+      <DependentUpon>ImDrawList.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawList.cs.h">
+      <DependentUpon>ImDrawList.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawVert.cs.h">
+      <DependentUpon>ImDrawVert.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFont.cs.cpp">
+      <DependentUpon>ImFont.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFont.cs.h">
+      <DependentUpon>ImFont.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontAtlas.cs.cpp">
+      <DependentUpon>ImFontAtlas.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontAtlas.cs.h">
+      <DependentUpon>ImFontAtlas.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontConfig.cs.cpp">
+      <DependentUpon>ImFontConfig.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontConfig.cs.h">
+      <DependentUpon>ImFontConfig.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiIO.cs.cpp">
+      <DependentUpon>ImGuiIO.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiListClipper.cs.h">
+      <DependentUpon>ImGuiListClipper.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiOnceUponAFrame.cs.h">
+      <DependentUpon>ImGuiOnceUponAFrame.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStorage.cs.cpp">
+      <DependentUpon>ImGuiStorage.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStorage.cs.h">
+      <DependentUpon>ImGuiStorage.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStyle.cs.cpp">
+      <DependentUpon>ImGuiStyle.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStyle.cs.h">
+      <DependentUpon>ImGuiStyle.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextBuffer.cs.cpp">
+      <DependentUpon>ImGuiTextBuffer.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextBuffer.cs.h">
+      <DependentUpon>ImGuiTextBuffer.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextEditCallbackData.cs.h">
+      <DependentUpon>ImGuiTextEditCallbackData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextFilter.cs.cpp">
+      <DependentUpon>ImGuiTextFilter.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextFilter.cs.h">
+      <DependentUpon>ImGuiTextFilter.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImVec2.cs.h">
+      <DependentUpon>ImVec2.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImVec4.cs.h">
+      <DependentUpon>ImVec4.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui.h\ImVector.cs.h">
+      <DependentUpon>ImVector.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\API.cpp" />
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\API.h" />
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiColMod.cs.h">
+      <DependentUpon>ImGuiColMod.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiColumnData.cs.h">
+      <DependentUpon>ImGuiColumnData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiDrawContext.cs.h">
+      <DependentUpon>ImGuiDrawContext.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiGroupData.cs.h">
+      <DependentUpon>ImGuiGroupData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiIniData.cs.h">
+      <DependentUpon>ImGuiIniData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiMouseCursorData.cs.h">
+      <DependentUpon>ImGuiMouseCursorData.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiPopupRef.cs.h">
+      <DependentUpon>ImGuiPopupRef.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiSimpleColumns.cs.cpp">
+      <DependentUpon>ImGuiSimpleColumns.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiSimpleColumns.cs.h">
+      <DependentUpon>ImGuiSimpleColumns.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiState.cs.h">
+      <DependentUpon>ImGuiState.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiStyleMod.cs.h">
+      <DependentUpon>ImGuiStyleMod.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiTextEditState.cs.h">
+      <DependentUpon>ImGuiTextEditState.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiWindow.cs.cpp">
+      <DependentUpon>ImGuiWindow.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiWindow.cs.h">
+      <DependentUpon>ImGuiWindow.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImRect.cs.h">
+      <DependentUpon>ImRect.cs</DependentUpon>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\Platform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)C.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Demo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImColor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawCallback.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawChannel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawCmd.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawIdx.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawList.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImDrawVert.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImFont.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontAtlas.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImFontConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiAlign.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiCol.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiColorEditMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiInputTextFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiIO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiListClipper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiMouseCursor.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiOnceUponAFrame.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiSelectableFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiSetCond.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStorage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStyle.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiStyleVar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextEditCallbackData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiTextFilter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiWindowFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImTextureID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImU32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImVec2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImVec4.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImVector.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui.h\ImWchar.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiButtonFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiColMod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiColumnData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiDataType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiDrawContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiGroupData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiIniData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiLayoutType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiMouseCursorData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiPlotType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiPopupRef.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiSelectableFlagsPrivate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiSimpleColumns.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiSliderFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiStyleMod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiTextEditState.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiTreeNodeFlags.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImGuiWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImGui_Internal.h\ImRect.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MaxRectBinsPack.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)STB.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)stb_textedit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)ImGui.h\ImGuiIO.cs.h">
+      <DependentUpon>ImGuiIO.cs</DependentUpon>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImGui.MonoGame.NET", "ImGui.MonoGame.NET\ImGui.MonoGame.NET.csproj", "{42AB25D4-D692-49CB-8B15-A37FFF296098}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{28F8251D-72A4-4941-9F44-7B34BCAD68CC}"
+	ProjectSection(SolutionItems) = preProject
+		ImGui_CPP\imconfig.h = ImGui_CPP\imconfig.h
+		ImGui_CPP\imgui.cpp = ImGui_CPP\imgui.cpp
+		ImGui_CPP\imgui.h = ImGui_CPP\imgui.h
+		ImGui_CPP\imgui_demo.cpp = ImGui_CPP\imgui_demo.cpp
+		ImGui_CPP\imgui_draw.cpp = ImGui_CPP\imgui_draw.cpp
+		ImGui_CPP\imgui_internal.h = ImGui_CPP\imgui_internal.h
+		ImGui_CPP\stb_rect_pack.h = ImGui_CPP\stb_rect_pack.h
+		ImGui_CPP\stb_textedit.h = ImGui_CPP\stb_textedit.h
+		ImGui_CPP\stb_truetype.h = ImGui_CPP\stb_truetype.h
+	EndProjectSection
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ImGuiSharp.Shared", "ImGuiSharp.Shared\ImGuiSharp.Shared.shproj", "{3BB0F0AC-52A6-4953-8B2E-8C7DEF3E9745}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ImGuiSharp.Shared\ImGuiSharp.Shared.projitems*{3bb0f0ac-52a6-4953-8b2e-8c7def3e9745}*SharedItemsImports = 13
+		ImGuiSharp.Shared\ImGuiSharp.Shared.projitems*{42ab25d4-d692-49cb-8b15-a37fff296098}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Debug|Any CPU.Build.0 = Debug|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Debug|x86.ActiveCfg = Debug|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Debug|x86.Build.0 = Debug|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Release|Any CPU.ActiveCfg = Release|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Release|Any CPU.Build.0 = Release|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Release|x86.ActiveCfg = Release|x86
+		{42AB25D4-D692-49CB-8B15-A37FFF296098}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
