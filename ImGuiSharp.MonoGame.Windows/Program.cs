@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ImGui.MonoGame.NET
+namespace ImGui.MonoGame
 {
 #if WINDOWS || LINUX
     /// <summary>

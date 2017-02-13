@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace ImGui.MonoGame.NET
+namespace ImGui.MonoGame
 {
     /// <summary>
     /// This is the main type for your game.
