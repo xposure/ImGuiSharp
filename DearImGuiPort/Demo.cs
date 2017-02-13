@@ -1622,45 +1622,45 @@ namespace ImGui
                             }
                             LogFinish();
                         }
-                    }
 
-                    SameLine(); PushItemWidth(120); Combo("##output_type", ref output_dest, new string[] { "To Clipboard", "To TTY" }); PopItemWidth();
-                    SameLine(); Checkbox("Only Modified Fields", ref output_only_modified);
+                        SameLine(); PushItemWidth(120); Combo("##output_type", ref output_dest, new string[] { "To Clipboard", "To TTY" }); PopItemWidth();
+                        SameLine(); Checkbox("Only Modified Fields", ref output_only_modified);
 
-                    RadioButton("RGB", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_RGB);
-                    SameLine();
-                    RadioButton("HSV", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_HSV);
-                    SameLine();
-                    RadioButton("HEX", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_HEX);
-                    //Text("Tip: Click on colored square to change edit mode.");
+                        RadioButton("RGB", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_RGB);
+                        SameLine();
+                        RadioButton("HSV", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_HSV);
+                        SameLine();
+                        RadioButton("HEX", ref edit_mode, (int)ImGuiColorEditMode.ImGuiColorEditMode_HEX);
+                        //Text("Tip: Click on colored square to change edit mode.");
 
-                    //TODO: filter.Draw("Filter colors", 200);
+                        //TODO: filter.Draw("Filter colors", 200);
 
-                    BeginChild("#colors", new ImVec2(0, 300), true, ImGuiWindowFlags.ImGuiWindowFlags_AlwaysVerticalScrollbar);
-                    PushItemWidth(-160);
-                    ColorEditMode((ImGuiColorEditMode)edit_mode);
-                    for (int i = 0; i < (int)ImGuiCol.ImGuiCol_COUNT; i++)
-                    {
-                        string name = GetStyleColName((ImGuiCol)i);
-                        //TODO: if (!filter.PassFilter(name))
-                        //    continue;
-                        PushID(i);
-                        //TODO: ColorEdit4(name, (float*)&style.Colors[i], true);
-                        //if (memcmp(&style.Colors[i], (@ref ? @ref.Colors[i] : def.Colors[i]), sizeof(ImVec4)) != 0)
-                        if (style.Colors[i] != (@ref != null ? @ref.Colors[i] : def.Colors[i]))
+                        BeginChild("#colors", new ImVec2(0, 300), true, ImGuiWindowFlags.ImGuiWindowFlags_AlwaysVerticalScrollbar);
+                        PushItemWidth(-160);
+                        ColorEditMode((ImGuiColorEditMode)edit_mode);
+                        for (int i = 0; i < (int)ImGuiCol.ImGuiCol_COUNT; i++)
                         {
-                            SameLine(); if (Button("Revert")) style.Colors[i] = @ref != null ? @ref.Colors[i] : def.Colors[i];
-                            if (@ref != null)
+                            string name = GetStyleColName((ImGuiCol)i);
+                            //TODO: if (!filter.PassFilter(name))
+                            //    continue;
+                            PushID(i);
+                            //TODO: ColorEdit4(name, (float*)&style.Colors[i], true);
+                            //if (memcmp(&style.Colors[i], (@ref ? @ref.Colors[i] : def.Colors[i]), sizeof(ImVec4)) != 0)
+                            if (style.Colors[i] != (@ref != null ? @ref.Colors[i] : def.Colors[i]))
                             {
-                                SameLine(); if (Button("Save")) @ref.Colors[i] = style.Colors[i];
+                                SameLine(); if (Button("Revert")) style.Colors[i] = @ref != null ? @ref.Colors[i] : def.Colors[i];
+                                if (@ref != null)
+                                {
+                                    SameLine(); if (Button("Save")) @ref.Colors[i] = style.Colors[i];
+                                }
                             }
+                            PopID();
                         }
-                        PopID();
-                    }
-                    PopItemWidth();
-                    EndChild();
+                        PopItemWidth();
+                        EndChild();
 
-                    TreePop();
+                        TreePop();
+                    }
                 });
             }
             _colors();
