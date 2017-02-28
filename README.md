@@ -8,7 +8,7 @@ Near completion of most of the port for ImGui to .NET. I would say I'm around th
 - Currently targeting MonoGame but I will remove this requirement to keep it in line with ImGui
 - Ported stb_textedited, may be useful for others looking for text input logic for .NET
 - Switched from stb truetype to freetype2
-- The screen shot below is rendering around 0.7ms in release mode (albeit on a higher end pc).
+- ~~The screen shot below is rendering around 0.7ms in release mode (albeit on a higher end pc).~~ Now down to <= 1ms in debug mode due to passing raw imgui data straight to buffers.
 - Still issues with input editing for sliders
 - ~~Pixel snapping issues causing things to appear blurry~~
 - ~~Minor issue with treeviews and retaining their state open properties when selecting other nodes~~
