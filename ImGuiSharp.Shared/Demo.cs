@@ -241,7 +241,7 @@ namespace ImGui
                         {
                             SameLine(); ShowHelpMarker("Tip: Load fonts with io.Fonts.AddFontFromFileTTF()\nbefore calling io.Fonts.GetTex* functions.");
                             ImFontAtlas atlas = GetIO().Fonts;
-                            if (TreeNode("Atlas texture", "Atlas texture (%dx%d pixels)", atlas.TexWidth, atlas.TexHeight))
+                            if (TreeNode("Atlas texture", "Atlas texture ({0}x{1} pixels)", atlas.TexWidth, atlas.TexHeight))
                             {
                                 Image(atlas.TexID, new ImVec2((float)atlas.TexWidth, (float)atlas.TexHeight), new ImVec2(0, 0), new ImVec2(1, 1), new ImColor(255, 255, 255, 255), new ImColor(255, 255, 255, 128));
                                 TreePop();
