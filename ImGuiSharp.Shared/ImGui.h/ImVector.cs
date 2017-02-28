@@ -114,7 +114,7 @@
             if (off < Size)
             {
                 //memmove( off + 1, off, ((size_t)Size - (size_t)off) * sizeof(value_type));
-                for (int i = Size; i > 0; i--)
+                for (int i = Size; i > it; i--)
                     Data[i] = Data[i - 1];
             }
             Data[off] = v;
