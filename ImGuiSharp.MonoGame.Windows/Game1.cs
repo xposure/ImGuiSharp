@@ -136,7 +136,6 @@ namespace ImGui.MonoGame
             texture2.SetData(data);
 
 
-            io.Fonts.Fonts[0].FontSize = 13;
             var t = new Texture2D(GraphicsDevice, 2, 2);
             t.SetData(new Color[] { Color.Red, Color.Green, Color.Blue, Color.Pink });
 
