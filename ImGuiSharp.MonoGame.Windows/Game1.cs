@@ -10,19 +10,20 @@ namespace ImGui.MonoGame
     /// </summary>
     public class Game1 : Game
     {
-        private Matrix worldMatrix;
-        private Matrix viewMatrix;
-        private Matrix projectionMatrix;
-        private BasicEffect basicEffect;
-
         private GraphicsDeviceManager graphics;
-        private SpriteBatch spriteBatch;
-        private Texture2D texture;
-        private Texture2D texture2;
+
+        private Matrix worldMatrix, viewMatrix, projectionMatrix;
+
+        private BasicEffect basicEffect;
+        private VertexBuffer vbuff;
+        private IndexBuffer ibuff;
+
         private ImGuiIO io;
-        private VertexPositionColorTexture[] verts;
-        private ushort[] indices;
-        private Texture2D white;
+        private Texture2D defaultWhiteTexture, fontTexture;
+
+        private int scrollWheel = 0;
+        private char[] input = new char[1024];
+
         private VertexDeclaration vertexDeclaration = new VertexDeclaration(
                 new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
                 new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
@@ -32,10 +33,8 @@ namespace ImGui.MonoGame
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
-            //graphics.SynchronizeWithVerticalRetrace = false;
-            //this.IsFixedTimeStep = false;
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
             Content.RootDirectory = "Content";
         }
 
@@ -47,28 +46,7 @@ namespace ImGui.MonoGame
         /// </summary>
         protected override void Initialize()
         {
-
-            viewMatrix = Matrix.CreateLookAt(
-                new Vector3(0.0f, 0f, -1f),
-                Vector3.Zero,
-                Vector3.Up
-                );
-            viewMatrix = Matrix.Identity;
-            projectionMatrix = Matrix.CreateOrthographic(
-                GraphicsDevice.Viewport.Width,
-                GraphicsDevice.Viewport.Height,
-                0.001f, 10000.0f);
-            projectionMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
-
-            basicEffect = new BasicEffect(GraphicsDevice);
-
-            //worldMatrix = Matrix.CreateTranslation((float)GraphicsDevice.Viewport.Width, (float)GraphicsDevice.Viewport.Height, 0f);
-            worldMatrix = Matrix.Identity;// Matrix.CreateTranslation(0, 0, 0f);
-            basicEffect.World = worldMatrix;
-            basicEffect.View = viewMatrix;
-            basicEffect.Projection = projectionMatrix;
-            basicEffect.VertexColorEnabled = true;
-            //// TODO: Add your initialization logic here
+            SetupBasicShader();
 
             // Application init
             io = ImGui.Instance.GetIO();
@@ -76,23 +54,35 @@ namespace ImGui.MonoGame
             io.DisplaySize.y = GraphicsDevice.Viewport.Height;
             io.IniFilename = "imgui.ini";
 
-            CreateFontsTexture();
+            SetupFontTextures();
+            SetupBuffers();
 
-            basicEffect.TextureEnabled = true;
-
-            white = new Texture2D(GraphicsDevice, 1, 1);
-            white.SetData(new Color[] { Color.White });
-
-            //GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
+            //not sure if we really need pointclamp since we add a 1px padding around each glyph
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
             GraphicsDevice.BlendState = BlendState.NonPremultiplied;
-            //GraphicsDevice.BlendState = new BlendState() {  }
-            //GraphicsDevice.RasterizerState = new RasterizerState() { CullMode = CullMode.None, FillMode = FillMode.WireFrame };
             GraphicsDevice.RasterizerState = new RasterizerState() { CullMode = CullMode.None, ScissorTestEnable = true };
 
-            verts = new VertexPositionColorTexture[1024];
-            indices = new ushort[4096];
+            SetupKeyMappings();
 
+            base.Initialize();
+        }
 
+        void SetupBasicShader()
+        {
+            viewMatrix = Matrix.Identity;
+            projectionMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
+            worldMatrix = Matrix.Identity;
+
+            basicEffect = new BasicEffect(GraphicsDevice);
+            basicEffect.World = worldMatrix;
+            basicEffect.View = viewMatrix;
+            basicEffect.Projection = projectionMatrix;
+            basicEffect.VertexColorEnabled = true;
+            basicEffect.TextureEnabled = true;
+        }
+
+        void SetupKeyMappings()
+        {
             io.KeyMap[(int)ImGuiKey.ImGuiKey_Tab] = (int)Keys.Tab + 0xff;
             io.KeyMap[(int)ImGuiKey.ImGuiKey_LeftArrow] = (int)Keys.Left + 0xff;
             io.KeyMap[(int)ImGuiKey.ImGuiKey_RightArrow] = (int)Keys.Right + 0xff;
@@ -111,67 +101,36 @@ namespace ImGui.MonoGame
             io.KeyMap[(int)ImGuiKey.ImGuiKey_X] = (int)Keys.X + 0xff;
             io.KeyMap[(int)ImGuiKey.ImGuiKey_Y] = (int)Keys.Y + 0xff;
             io.KeyMap[(int)ImGuiKey.ImGuiKey_Z] = (int)Keys.Z + 0xff;
-
-            base.Initialize();
         }
 
-        bool CreateFontsTexture()
+        void SetupBuffers()
+        {
+            vbuff = new VertexBuffer(GraphicsDevice, vertexDeclaration, 4096, BufferUsage.WriteOnly);
+            ibuff = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 4096 * 4, BufferUsage.WriteOnly);
+        }
+
+        bool SetupFontTextures()
         {
             var io = ImGui.Instance.GetIO();
 
+            //font texture
             int width, height;
             var data = io.Fonts.GetTexDataAsAlpha8(out width, out height);
-            var color1 = new int[data.Length];
-            var color2 = new int[data.Length];
-            for (var i = 0; i < data.Length; i++)
-            {
-                //color1[i] = (data[i] << 24) + 0xff;
-                color1[i] = (data[i] << 24) + 0xffffff;
-                color2[i] = (0xff << 24) + (data[i] + (data[i] << 8) + (data[i] << 16));
-            }
-
-            texture = new Texture2D(GraphicsDevice, width, height);
-            texture.SetData(color1);
 
             data = io.Fonts.GetTexDataAsARGB32(out width, out height);
-            texture2 = new Texture2D(GraphicsDevice, width, height);
-            texture2.SetData(data);
+            fontTexture = new Texture2D(GraphicsDevice, width, height);
+            fontTexture.SetData(data);
 
+            io.Fonts.TexID = new ImTextureID(fontTexture);
+            basicEffect.Texture = fontTexture;
 
-            var t = new Texture2D(GraphicsDevice, 2, 2);
-            t.SetData(new Color[] { Color.Red, Color.Green, Color.Blue, Color.Pink });
+            //default white texture
+            defaultWhiteTexture = new Texture2D(GraphicsDevice, 1, 1);
+            defaultWhiteTexture.SetData(new Color[] { Color.White });
 
-            io.Fonts.TexID = new ImTextureID(texture2);
-            basicEffect.Texture = texture2;
-
-            vbuff = new VertexBuffer(GraphicsDevice, vertexDeclaration, 4096, BufferUsage.WriteOnly);
-            ibuff = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 4096 * 4, BufferUsage.WriteOnly);
             return true;
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
-        protected override void LoadContent()
-        {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
-        }
-
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        int scrollWheel = 0;
-        char[] input = new char[1024];
 
         // An umanaged function that retrieves the states of each key
         [DllImport("user32.dll", CharSet = CharSet.Auto, ExactSpelling = true, CallingConvention = CallingConvention.Winapi)]
@@ -319,70 +278,28 @@ namespace ImGui.MonoGame
 
             ImGui.Instance.NewFrame();
 
-            //if (ImGui.Instance.Begin("My window"))
-            //{
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.Text("Hello, world.Hello, world.");
-            //    ImGui.Instance.InputText("Input", input, input.Length);
-            //    ImGui.Instance.LabelText("hello", "0.1234f");
-            //    if (ImGui.Instance.Button("click me", new ImVec2(100, 0)))
-            //    {
-
-            //    }
-            //}
-            //ImGui.Instance.End();
-
             bool crap = true;
             ImGui.Instance.ShowTestWindow(ref crap);
-            //ImGui.Instance.ShowMetricsWindow(ref crap);
 
-
-            index++;
             base.Update(gameTime);
-
-            //ImGui.Instance.EndFrame();
         }
 
-        private void DrawTriangle(Vector3 p0, Vector3 p1, Vector3 p2)
+        private void EnsureBuffers(int vertexCount, int indexCount)
         {
-            basicEffect.Texture = white;
-            var verts = new VertexPositionColorTexture[3];
-            verts[0] = new VertexPositionColorTexture(p0, Color.Red, new Microsoft.Xna.Framework.Vector2(0, 0));
-            verts[1] = new VertexPositionColorTexture(p1, Color.Blue, new Microsoft.Xna.Framework.Vector2(1, 0));
-            verts[2] = new VertexPositionColorTexture(p2, Color.Green, new Microsoft.Xna.Framework.Vector2(1, 1));
-            var indices = new int[3];
-            indices[0] = 0;
-            indices[1] = 1;
-            indices[2] = 2;
-
-            foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
+            if (vertexCount >= vbuff.VertexCount)
             {
-                pass.Apply();
-                GraphicsDevice.DrawUserIndexedPrimitives(
-                       PrimitiveType.TriangleList,
-                       verts,
-                       0,  // vertex buffer offset to add to each element of the index buffer
-                       3,  // number of vertices in pointList
-                       indices,  // the index buffer
-                       0,  // first index element to read
-                       1   // number of primitives to draw
-                   );
+                vbuff.Dispose();
+                vbuff = new VertexBuffer(this.GraphicsDevice, vertexDeclaration, vertexCount * 3 / 2, BufferUsage.WriteOnly);
             }
+
+            if (indexCount >= ibuff.IndexCount)
+            {
+                ibuff.Dispose();
+                ibuff = new IndexBuffer(this.GraphicsDevice, IndexElementSize.SixteenBits, indexCount * 3 / 2, BufferUsage.WriteOnly);
+            }
+
         }
 
-        private int index = 0;
-        VertexBuffer vbuff;
-        IndexBuffer ibuff;
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             ImGui.Instance.Render();
@@ -390,31 +307,14 @@ namespace ImGui.MonoGame
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //int w = GraphicsDevice.Viewport.Width, h = GraphicsDevice.Viewport.Height;
-            //DrawTriangle(new Vector3(0, 0, 0), new Vector3(100, 0, 0), new Vector3(0, 100, 0));
-            //DrawTriangle(new Vector3(w, h, 0), new Vector3(w - 100, h, 0), new Vector3(w, h - 100, 0));
-
             for (var k = 0; k < data.CmdListsCount; k++)
             {
                 var drawlist = data.CmdLists[k];
-                if (verts == null || verts.Length < drawlist.VtxBuffer.Size)
-                {                    
-                    verts = new VertexPositionColorTexture[drawlist.VtxBuffer.Size * 3  / 2];
-                    vbuff.Dispose();
-                    vbuff = new VertexBuffer(this.GraphicsDevice, vertexDeclaration, verts.Length, BufferUsage.WriteOnly);
-                }
 
-                if (indices == null || indices.Length < drawlist.IdxBuffer.Size)
-                {
-                    indices = new ushort[drawlist.IdxBuffer.Size * 3 / 2];
-                    ibuff.Dispose();
-                    ibuff = new IndexBuffer(this.GraphicsDevice,IndexElementSize.SixteenBits, indices.Length, BufferUsage.WriteOnly);
-                }
-                for (var i = 0; i < drawlist.IdxBuffer.Size; i++)
-                    indices[i] = drawlist.IdxBuffer[i];
+                EnsureBuffers(drawlist.VtxBuffer.Size, drawlist.IdxBuffer.Size);
 
                 vbuff.SetData(drawlist.VtxBuffer.Data, 0, drawlist.VtxBuffer.Size);
-                ibuff.SetData(indices, 0, drawlist.IdxBuffer.Size);
+                ibuff.SetData(drawlist.IdxBuffer.Data, 0, drawlist.IdxBuffer.Size);
 
                 GraphicsDevice.SetVertexBuffer(vbuff);
                 GraphicsDevice.Indices = ibuff;
@@ -433,59 +333,11 @@ namespace ImGui.MonoGame
                         {
                             pass.Apply();
                             GraphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, idxoffset, (int)(pcmd.ElemCount / 3));
-
-                            //GraphicsDevice.DrawUserIndexedPrimitives(
-                            //       PrimitiveType.TriangleList,
-                            //       verts,
-                            //       0,  // vertex buffer offset to add to each element of the index buffer
-                            //       verts.Length,  // number of vertices in pointList
-                            //       indices,  // the index buffer
-                            //       (ushort)idxoffset,  // first index element to read
-                            //       (int)(pcmd.ElemCount / 3)   // number of primitives to draw
-                            //   );
                         }
                     }
                     idxoffset += (int)pcmd.ElemCount;
                 }
             }
-
-            //basicEffect.Texture = white;
-            //verts[0] = new VertexPositionColorTexture(new Vector3(0, 0, 0), Color.Red, new Vector2(0, 0));
-            //verts[1] = new VertexPositionColorTexture(new Vector3(100, 0, 0), Color.Blue, new Vector2(1, 0));
-            //verts[2] = new VertexPositionColorTexture(new Vector3(0, 100, 0), Color.Green, new Vector2(1, 1));
-            //indices[0] = 0;
-            //indices[1] = 1;
-            //indices[2] = 2;
-
-            //foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
-            //{
-            //    pass.Apply();
-            //    GraphicsDevice.DrawUserIndexedPrimitives(
-            //           PrimitiveType.TriangleList,
-            //           verts,
-            //           0,  // vertex buffer offset to add to each element of the index buffer
-            //           3,  // number of vertices in pointList
-            //           indices,  // the index buffer
-            //           0,  // first index element to read
-            //           1   // number of primitives to draw
-            //       );
-            //}
-
-            ////spriteBatch.Begin();
-            //var scale = 4;
-            //if (((index / 60) % 2) == 0)
-            //{
-            //    spriteBatch.Begin(blendState: BlendState.NonPremultiplied, samplerState: SamplerState.PointClamp);
-            //    spriteBatch.Draw(texture, new Rectangle(0, 0, texture.Width * scale, texture.Height * scale), Color.White);
-            //}
-            //else
-            //{
-            //    spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-            //    spriteBatch.Draw(texture2, new Rectangle(0, 0, texture.Width * scale, texture.Height * scale), Color.White);
-            //}
-            //spriteBatch.End();
-            //// 4) render & swap video buffers
-            //ImGui::Render();
 
             base.Draw(gameTime);
         }
