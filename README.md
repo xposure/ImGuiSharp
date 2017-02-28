@@ -11,9 +11,9 @@ Near completion of most of the port for ImGui to .NET. I would say I'm around th
 - The screen shot below is rendering around 0.7ms in release mode (albeit on a higher end pc).
 - Still issues with input editing for sliders
 - ~~Pixel snapping issues causing things to appear blurry~~
-- Minor issue with treeviews and retaining their state open properties when selecting other nodes
+- ~~Minor issue with treeviews and retaining their state open properties when selecting other nodes~~
 - Appears to be an issue with the scaling to the window
-- Code will be put up on GitHub in the near future
-- Can not build for x64 due to SharpFont nuget package hard coding to x86 binaries with a TODO statement to fix it...
+- ~~Code will be put up on GitHub in the near future~~
+- ~~Can not build for x64 due to SharpFont nuget package hard coding to x86 binaries with a TODO statement to fix it...~~
 
 ![image](https://cloud.githubusercontent.com/assets/6292318/14368012/1b62d372-fce9-11e5-9801-6e54d326f2c1.png)
