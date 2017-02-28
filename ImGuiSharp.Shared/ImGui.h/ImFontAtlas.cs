@@ -287,7 +287,29 @@ namespace ImGui
                     }
                 }
 
-                cfg.Face.SetPixelSizes(0, (uint)cfg.SizePixels);
+                cfg.Face.SetPixelSizes((uint)cfg.SizePixels, (uint)cfg.SizePixels);
+
+                //need to calculate origin/baseline
+                var top = 0f;
+                var bot = 0f;
+
+                for (var i = 0; i < rects.Size; i++)
+                {
+                    var rect = rects[i];
+                    //if (rect.id > 0 /*&& rect.was_packed*/)
+                    {
+                        var codepoint = (ushort)rect.id;
+                        if (cfg.MergeMode && dst_font.HasGlyph((char)codepoint))
+                            continue;
+
+                        uint glyphIndex = cfg.Face.GetCharIndex(codepoint);
+                        cfg.Face.LoadGlyph(glyphIndex, LoadFlags.ComputeMetrics, LoadTarget.Normal);
+                        var glyphTop = (float)cfg.Face.Glyph.Metrics.HorizontalBearingY;
+                        var glyphBot = (float)(cfg.Face.Glyph.Metrics.Height - cfg.Face.Glyph.Metrics.HorizontalBearingY);
+                        if (glyphTop > top) top = glyphTop;
+                        if (glyphBot > bot) bot = glyphBot;
+                    }
+                }
 
                 //dst_font.FallbackGlyph = null; // Always clear fallback so FindGlyph can return NULL. It will be set again in BuildLookupTable()
                 for (var i = 0; i < rects.Size; i++)
@@ -302,37 +324,21 @@ namespace ImGui
                         uint glyphIndex = cfg.Face.GetCharIndex(codepoint);
                         cfg.Face.LoadGlyph(glyphIndex, LoadFlags.ComputeMetrics, LoadTarget.Normal);
 
-                        //var bmp = cfg.Face.Glyph.Bitmap;
-                        //for (var x = 0; x < bmp.Width; x++)
-                        //    for (var y = 0; y < bmp.Rows; y++)
-                        //        TexPixelsAlpha8[(rect.x + x) + ((rect.y + y) * TexWidth)] = bmp.BufferData[x + y * bmp.Pitch];
-
                         dst_font.Glyphs.resize(dst_font.Glyphs.Size + 1);
                         var glyph = dst_font.Glyphs[dst_font.Glyphs.Size - 1];
                         glyph.Codepoint = codepoint;
 
-                        //glyph.X0 = 0;
-                        //glyph.X1 = (int)cfg.Face.Glyph.Metrics.Width;
-                        //glyph.Y0 = 0;
-                        //glyph.Y1 = (int)cfg.Face.Glyph.Metrics.Height;
-
-                        glyph.X0 = cfg.Face.Glyph.BitmapLeft + 1;
+                        glyph.X0 = (int)cfg.Face.Glyph.Metrics.HorizontalBearingX + (float)cfg.Face.Glyph.BitmapLeft;
                         glyph.X1 = (int)cfg.Face.Glyph.Metrics.Width + glyph.X0;
-                        glyph.Y0 = max_height - (float)cfg.Face.Glyph.Metrics.HorizontalBearingY;
-                        glyph.Y0 -= 2;
-                        //glyph.Y1 -= max_height / 2;
-                        glyph.Y1 = (float)cfg.Face.Glyph.Metrics.Height + glyph.Y0;
-                        //glyph.Y0 += (int)(dst_font.Ascent + off_y + 0.5f);
-                        //glyph.Y1 += (int)(dst_font.Ascent + off_y + 0.5f);
-
+                        glyph.Y0 = top - (float)cfg.Face.Glyph.Metrics.HorizontalBearingY;
+                        glyph.Y1 = glyph.Y0 + (float)cfg.Face.Glyph.Metrics.Height;
 
                         glyph.U0 = rect.x / (float)TexWidth;
                         glyph.V0 = rect.y / (float)TexHeight;
                         glyph.U1 = (rect.x + rect.w) / (float)TexWidth;
                         glyph.V1 = (rect.y + rect.h) / (float)TexHeight;
 
-
-                        glyph.XAdvance = ((int)cfg.Face.Glyph.Advance.X + cfg.GlyphExtraSpacing.x);  // Bake spacing into XAdvance
+                        glyph.XAdvance = ((int)cfg.Face.Glyph.Metrics.HorizontalAdvance + cfg.GlyphExtraSpacing.x);  // Bake spacing into XAdvance
                         if (cfg.PixelSnapH)
                             glyph.XAdvance = (int)(glyph.XAdvance + 0.5f);
                         dst_font.Glyphs[dst_font.Glyphs.Size - 1] = glyph;
@@ -491,7 +497,7 @@ namespace ImGui
             ClearTexData();
             return Fonts[Fonts.Size - 1];
         }
-        internal ImFont AddFontDefault(ImFontConfig font_cfg_template = null)
+        internal ImFont AddFontDefault(float fontSize = 13f, ImFontConfig font_cfg_template = null)
         {
             ImFontConfig font_cfg = font_cfg_template ?? new ImFontConfig();// font_cfg_template != null ? *font_cfg_template : ImFontConfig();
             if (font_cfg_template == null)
@@ -503,7 +509,7 @@ namespace ImGui
                 font_cfg.Name = "<default>";
 
             var ttf_compressed_base85 = STB.GetDefaultCompressedFontDataTTFBase85();
-            ImFont font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, 13.0f, font_cfg, GetGlyphRangesDefault());
+            ImFont font = AddFontFromMemoryCompressedBase85TTF(ttf_compressed_base85, fontSize, font_cfg, GetGlyphRangesDefault());
             return font;
         }
         //TODO: AddFontFromFileTTF
@@ -627,7 +633,7 @@ namespace ImGui
             if (TexPixelsAlpha8 == null)
             {
                 if (ConfigData.empty())
-                    AddFontDefault();
+                    AddFontDefault(20f);
                 Build();
             }
 
