@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Diagnostics;
 
 namespace ImGui.MonoGame
 {
@@ -23,6 +24,8 @@ namespace ImGui.MonoGame
 
         private int scrollWheel = 0;
         private char[] input = new char[1024];
+
+        private float renderTime = 0f;
 
         private VertexDeclaration vertexDeclaration = new VertexDeclaration(
                 new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
@@ -302,7 +305,11 @@ namespace ImGui.MonoGame
 
         protected override void Draw(GameTime gameTime)
         {
+            ImGui.Instance.Text("AVG Render: {0:0.0000}", renderTime);
+            var timer = Stopwatch.StartNew();
+
             ImGui.Instance.Render();
+
             var data = ImGui.Instance.GetDrawData();
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -340,6 +347,9 @@ namespace ImGui.MonoGame
             }
 
             base.Draw(gameTime);
+
+            timer.Stop();
+            renderTime = renderTime * 0.8f + (float)timer.Elapsed.TotalSeconds * 0.2f;
         }
     }
 }
