@@ -14,7 +14,6 @@ namespace ImGui.MonoGame
         private Matrix viewMatrix;
         private Matrix projectionMatrix;
         private BasicEffect basicEffect;
-        private VertexDeclaration vertexDeclaration;
 
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
@@ -24,6 +23,11 @@ namespace ImGui.MonoGame
         private VertexPositionColorTexture[] verts;
         private ushort[] indices;
         private Texture2D white;
+        private VertexDeclaration vertexDeclaration = new VertexDeclaration(
+                new VertexElement(0, VertexElementFormat.Vector2, VertexElementUsage.Position, 0),
+                new VertexElement(8, VertexElementFormat.Vector2, VertexElementUsage.TextureCoordinate, 0),
+                new VertexElement(16, VertexElementFormat.Color, VertexElementUsage.Color, 0)
+            );
 
         public Game1()
         {
@@ -55,8 +59,6 @@ namespace ImGui.MonoGame
                 GraphicsDevice.Viewport.Height,
                 0.001f, 10000.0f);
             projectionMatrix = Matrix.CreateOrthographicOffCenter(0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0, 0, -1);
-
-            vertexDeclaration = VertexPositionTexture.VertexDeclaration;
 
             basicEffect = new BasicEffect(GraphicsDevice);
 
@@ -142,7 +144,7 @@ namespace ImGui.MonoGame
             io.Fonts.TexID = new ImTextureID(texture2);
             basicEffect.Texture = texture2;
 
-            vbuff = new VertexBuffer(GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, 4096, BufferUsage.WriteOnly);
+            vbuff = new VertexBuffer(GraphicsDevice, vertexDeclaration, 4096, BufferUsage.WriteOnly);
             ibuff = new IndexBuffer(GraphicsDevice, IndexElementSize.SixteenBits, 4096 * 4, BufferUsage.WriteOnly);
             return true;
         }
@@ -383,7 +385,6 @@ namespace ImGui.MonoGame
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-
             ImGui.Instance.Render();
             var data = ImGui.Instance.GetDrawData();
 
@@ -393,7 +394,6 @@ namespace ImGui.MonoGame
             //DrawTriangle(new Vector3(0, 0, 0), new Vector3(100, 0, 0), new Vector3(0, 100, 0));
             //DrawTriangle(new Vector3(w, h, 0), new Vector3(w - 100, h, 0), new Vector3(w, h - 100, 0));
 
-
             for (var k = 0; k < data.CmdListsCount; k++)
             {
                 var drawlist = data.CmdLists[k];
@@ -401,16 +401,7 @@ namespace ImGui.MonoGame
                 {                    
                     verts = new VertexPositionColorTexture[drawlist.VtxBuffer.Size * 3  / 2];
                     vbuff.Dispose();
-                    vbuff = new VertexBuffer(this.GraphicsDevice, VertexPositionColorTexture.VertexDeclaration, verts.Length, BufferUsage.WriteOnly);
-                }
-                for (var i = 0; i < drawlist.VtxBuffer.Size; i++)
-                {
-                    var v = drawlist.VtxBuffer[i];
-                    //var p = new Vector3((int)v.pos.x, (int)v.pos.y, 0);
-                    var p = new Vector3((int)System.Math.Round(v.pos.x, System.MidpointRounding.AwayFromZero), (int)System.Math.Round(v.pos.y, System.MidpointRounding.AwayFromZero), 0);
-                    var uv = new Microsoft.Xna.Framework.Vector2(v.uv.x, v.uv.y);
-                    var c = ImGui.ColorConvertU32ToFloat4(v.col);
-                    verts[i] = new VertexPositionColorTexture(p, new Color(c.x, c.y, c.z, c.w), uv);
+                    vbuff = new VertexBuffer(this.GraphicsDevice, vertexDeclaration, verts.Length, BufferUsage.WriteOnly);
                 }
 
                 if (indices == null || indices.Length < drawlist.IdxBuffer.Size)
@@ -422,7 +413,7 @@ namespace ImGui.MonoGame
                 for (var i = 0; i < drawlist.IdxBuffer.Size; i++)
                     indices[i] = drawlist.IdxBuffer[i];
 
-                vbuff.SetData(verts, 0, drawlist.VtxBuffer.Size);
+                vbuff.SetData(drawlist.VtxBuffer.Data, 0, drawlist.VtxBuffer.Size);
                 ibuff.SetData(indices, 0, drawlist.IdxBuffer.Size);
 
                 GraphicsDevice.SetVertexBuffer(vbuff);

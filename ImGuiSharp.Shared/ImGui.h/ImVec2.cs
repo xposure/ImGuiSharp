@@ -2,8 +2,10 @@
 {
     using System.Diagnostics;
     using System.Runtime.CompilerServices;
+    using System.Runtime.InteropServices;
 
     [DebuggerDisplay("X: {x}, Y: {y}")]
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ImVec2
     {
         public float x, y;
