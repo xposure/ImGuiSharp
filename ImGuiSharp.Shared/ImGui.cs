@@ -1,4 +1,6 @@
-﻿namespace ImGui
+using System.IO;
+
+namespace ImGui
 {
     internal partial class ImGui
     {
@@ -254,8 +256,8 @@
             }
         }
 
-        internal ImGuiState State = new ImGuiState();
-        internal static ImFontAtlas ImDefaultFontAtlas = new ImFontAtlas();
+        internal ImGuiState State                       = new ImGuiState();
+        internal static ImFontAtlas ImDefaultFontAtlas  = new ImFontAtlas();
         //ImGuiState* GImGui = &GImDefaultState;
 
         // Statically allocated default font atlas. This is merely a maneuver to keep ImFontAtlas definition at the bottom of the .h file (otherwise it'd be inside ImGuiIO)
@@ -293,7 +295,8 @@
                 //IM_PLACEMENT_NEW(g.LogClipboard) ImGuiTextBuffer();
 
                 //TODO: System.Diagnostics.Debug.Assert(g.Settings.empty());
-                //TODO: LoadSettings();
+                //TODO: 
+                LoadSettings();
                 g.Initialized = true;
             }
 
@@ -3327,7 +3330,7 @@
         }
 
         // NB: behavior of ImGui after Shutdown() is not tested/guaranteed at the moment. This function is merely here to free heap allocations.
-        void Shutdown()
+        public void Shutdown()
         {
             ImGuiState g = State;
 
@@ -3339,7 +3342,7 @@
             if (!g.Initialized)
                 return;
 
-            SaveSettings();
+            SaveSettings(g);
 
             for (int i = 0; i < g.Windows.Size; i++)
             {
@@ -3507,55 +3510,202 @@
         // FIXME: Write something less rubbish
         void LoadSettings()
         {
+            
+            ImGuiState g = State;                               // get access to state
+            string filename = g.IO.IniFilename;                 // get filename
+
+            if (filename == null)                               // file name is not set
+                return;                                         // quit
+
+            if (!File.Exists(filename))                         // the file does not exist
+            {
+                File.Create(filename);
+                return;                                          // quit
+            }
+
+            if (new FileInfo(filename).Length == 0)             // the file is empty
+                return;                                         // quit
+
+            StreamReader f = new StreamReader(filename);        // open the file for reading
+
+            ImGuiIniData settings = null;                       // create settings holder
+           
+            while(!f.EndOfStream)                               // while the whole file has not been read
+            {
+                string line = f.ReadLine();                     // read next line
+
+                if (line.StartsWith("[") && line.EndsWith("]")) // the line is a name setting
+                {
+                    char[] braces = { '[', ']' };               // characters to trim off string
+                    string name = line.Trim(braces);            // trim off characters
+                    settings = FindWindowSettings(name);        // find a setting ID that matches name
+                    if (settings == null)                       // the setting does not exist
+                        settings = AddWindowSettings(name);     // create the setting
+                }
+                else if (settings != null)                      // there is a current setting
+                {
+                    if(line.StartsWith("Pos="))                 // the position line
+                    {
+                        string[] parts = line.Split(new[]       // split the line into substrings
+                        {
+                            '=', ','                            // split at the '=' and the ','
+                        });
+
+                        settings.Pos = new ImVec2(              // set the postion 
+                            float.Parse(parts[1]),              // parse the x value from the string
+                            float.Parse(parts[2]));             // parse the y value from the string
+                    }
+                    else if (line.StartsWith("Size="))          // the size line
+                    {
+                        string[] parts = line.Split(new[]       // split the line into substrings
+                        {
+                            '=', ','                            // split at the '=' and the ','
+                        });
+
+                        settings.Size = new ImVec2(             // set the size 
+                            float.Parse(parts[1]),              // parse the x value from the string
+                            float.Parse(parts[2]));             // parse the y value from the string
+                    }
+                    else if (line.StartsWith("Collapsed="))
+                    {
+                        string[] parts = line.Split(new[]       // split the line into substrings
+                        {
+                            '='                                 // split at the '='
+                        });
+
+                        bool value;                             // holder for collapsed value
+                        if (parts[1] == "False")                // the read in string states false
+                            value = false;                      // value is false
+                        else                                    // the read in string states something else
+                            value = true;                       // value is true
+                        settings.Collapsed = value;             // set collapsed
+                    }
+                }
+            }
+
+            f.Close();                                          // close the file
+
             //TODO: LoadSettings()
-            //        ImGuiState g = State;
-            //        const char* filename = g.IO.IniFilename;
-            //        if (!filename)
-            //            return;
+            //const char* filename = g.IO.IniFilename;
 
-            //        int file_size;
-            //        char* file_data = (char*)ImLoadFileToMemory(filename, "rb", &file_size, 1);
-            //        if (!file_data)
-            //            return;
+            //if (!filename)
+            //    return;
 
-            //        ImGuiIniData* settings = NULL;
-            //        const char* buf_end = file_data + file_size;
-            //        for (const char* line_start = file_data; line_start < buf_end; )
+            //int file_size;
+            //char* file_data = (char*)ImLoadFileToMemory(filename, "rb", &file_size, 1);
+            //if (!file_data)
+            //    return;
+
+            //ImGuiIniData* settings = NULL;
+            //const char* buf_end = file_data + file_size;
+            //for (const char* line_start = file_data; line_start < buf_end; )
             //{
-            //            const char* line_end = line_start;
-            //            while (line_end < buf_end && *line_end != '\n' && *line_end != '\r')
-            //                line_end++;
+            //    const char* line_end = line_start;
+            //    while (line_end < buf_end && *line_end != '\n' && *line_end != '\r')
+            //        line_end++;
 
-            //            if (line_start[0] == '[' && line_end > line_start && line_end[-1] == ']')
-            //            {
-            //                char name[64];
-            //                ImFormatString(name, IM_ARRAYSIZE(name), "%.*s", (int)(line_end - line_start - 2), line_start + 1);
-            //                settings = FindWindowSettings(name);
-            //                if (!settings)
-            //                    settings = AddWindowSettings(name);
-            //            }
-            //            else if (settings)
-            //            {
-            //                float x, y;
-            //                int i;
-            //                if (sscanf(line_start, "Pos=%f,%f", &x, &y) == 2)
-            //                    settings->Pos = ImVec2(x, y);
-            //                else if (sscanf(line_start, "Size=%f,%f", &x, &y) == 2)
-            //                    settings->Size = ImMax(ImVec2(x, y), g.Style.WindowMinSize);
-            //                else if (sscanf(line_start, "Collapsed=%d", &i) == 1)
-            //                    settings->Collapsed = (i != 0);
-            //            }
+            //    if (line_start[0] == '[' && line_end > line_start && line_end[-1] == ']')
+            //    {
+            //        char name[64];
+            //        ImFormatString(name, IM_ARRAYSIZE(name), "%.*s", (int)(line_end - line_start - 2), line_start + 1);
+            //        settings = FindWindowSettings(name);
+            //        if (!settings)
+            //            settings = AddWindowSettings(name);
+            //    }
+            //    else if (settings)
+            //    {
+            //        float x, y;
+            //        int i;
+            //        if (sscanf(line_start, "Pos=%f,%f", &x, &y) == 2)
+            //            settings->Pos = ImVec2(x, y);
+            //        else if (sscanf(line_start, "Size=%f,%f", &x, &y) == 2)
+            //            settings->Size = ImMax(ImVec2(x, y), g.Style.WindowMinSize);
+            //        else if (sscanf(line_start, "Collapsed=%d", &i) == 1)
+            //            settings->Collapsed = (i != 0);
+            //    }
 
-            //            line_start = line_end + 1;
-            //        }
+            //    line_start = line_end + 1;
+            //}
 
-            //        ImGui::MemFree(file_data);
+            //ImGui::MemFree(file_data);
         }
 
-        static void SaveSettings()
+        static void SaveSettings(ImGuiState state)
         {
+            ImGuiState g = state;                               // get access to state
+
+            string filename = g.IO.IniFilename;                 // get filename
+            if (filename == null)                               // file name is not set
+                return;                                         // quit
+                                      
+            for (int i = 0; i != g.Windows.Size; i++)           // Gather data from windows that were active during this session
+            {
+                ImGuiWindow window = g.Windows[i];              // grab the window
+
+                ImGuiWindowFlags saveflag = ImGuiWindowFlags    // get the value of don't save settings flag
+                    .ImGuiWindowFlags_NoSavedSettings;
+
+                if ((window.Flags &saveflag).Equals(1))         // window flags has the don't save settings flag set
+                    continue;                                   // skip this window
+
+                uint ID = Hash(0, window.Name);                 // get the ID of the window
+
+                ImGuiIniData settings = null;                   // create a settings holder
+
+                for (int n = 0; n != g.Settings.Size; n++)      // of all the settings objects in the container
+                    if (g.Settings[i].ID == ID)                 // the droid you were looking for
+                        settings = g.Settings[i];               // save it into the holder
+
+                if(settings != null)                            // the setting object was found
+                {
+                    settings.Pos       = window.Pos;            // transfer position value
+                    settings.Size      = window.SizeFull;       // transfer size value
+                    settings.Collapsed = window.Collapsed;      // transfer collapsed value
+                }
+            }
+
+            if (!File.Exists(filename))                         // ini file does not exist
+                File.Create(filename);                          // create it
+
+            StreamWriter f = new StreamWriter(filename);        // open the file for writing
+
+            for (int i = 0; i != g.Settings.Size; i++)          // loop through all of the settings in container
+            {
+                ImGuiIniData settings = g.Settings[i];          // grab a settings object
+                if (settings.Pos.x == 3.402823466e+38F)         // if the position is some max value
+                    continue;                                   // skip it
+
+                string name      = settings.Name,               // get the name value
+                       delimiter = "###";                       // delimiter for IDs with same name
+
+                if (name.Contains(delimiter))                   // name contains delimiter
+                {
+                    string[] substrs =                          // save the substrings 
+                        name.Split(new[] { delimiter }, 0);     // without the delimiter
+                    name = "";                                  // clear the name
+
+                    for (int n = 0; n < substrs.Length; n++)    // loop through the substrings and combine them
+                    {
+                        if (n == 0) name += substrs[n];         // the first substring doesn't need a preceding whitespace
+                        else name += " " + substrs[n];          // all other substrings need a preceding whitespace
+                    }
+                }
+
+                f.WriteLine(string.Format("[{0}]", name));      // write name value to file
+                f.WriteLine(string.Format("Pos={0},{1}",        // write position value to file
+                    (int)settings.Pos.x, (int)settings.Pos.y));
+                f.WriteLine(string.Format("Size={0},{1}",       // write size value to file
+                    (int)settings.Size.x, (int)settings.Size.y));
+                f.WriteLine(string.Format("Collapsed={0}",      // write collasped value to file
+                    settings.Collapsed));
+                f.WriteLine();                                  // separate entries with a blank line
+            }
+
+            f.Close();                                          // close the file
+
             //TODO: SaveSettings()
             //        ImGuiState & g = *GImGui;
+
             //        const char* filename = g.IO.IniFilename;
             //        if (!filename)
             //            return;
@@ -4290,8 +4440,6 @@
             return pressed;
         }
 
-
-
         void TextColored(ImVec4 col, string text, params object[] args)
         {
             if (args != null && args.Length > 0)
@@ -4436,7 +4584,6 @@
             g.SetNextTreeNodeOpenedCond = cond != 0 ? cond : ImGuiSetCond.ImGuiSetCond_Always;
         }
 
-
         bool TreeNodeBehaviorIsOpened(uint id, ImGuiTreeNodeFlags flags)
         {
             // We only write to the tree storage if the user clicks (or explicitely use SetNextTreeNode*** functions)
@@ -4481,7 +4628,6 @@
 
             return opened;
         }
-
 
         // FIXME: Split into CollapsingHeader(label, default_open?) and TreeNodeBehavior(label), obsolete the 4 parameters function.
         bool CollapsingHeader(string label, string str_id = null, bool display_frame = true, bool default_open = false)
